@@ -1,3 +1,4 @@
+from neurons.Neuron import *
 from collections import deque
 
 class HiddenNeuron(Neuron):
@@ -11,11 +12,11 @@ class HiddenNeuron(Neuron):
         try:
             prev_value, cur_value = self.input_signals.popleft()
             if cur_value > prev_value:
-                emit(1.0)
+                self.emit(1.0)
             elif cur_value < prev_value:
-                emit(-1.0)
+                self.emit(-1.0)
             else:
-                emit(0.0)
+                self.emit(0.0)
         except IndexError:
             print "No input signals to process"
 
@@ -25,3 +26,6 @@ class HiddenNeuron(Neuron):
 
     def receive(self, input_signal):
         self.input_signals.append(input_signal)
+
+    def add_connection(self, neuron):
+        self.neurons.append(neuron)

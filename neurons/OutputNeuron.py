@@ -1,3 +1,4 @@
+from neurons.Neuron import *
 from collections import deque
 
 class OutputNeuron(Neuron):
@@ -8,7 +9,13 @@ class OutputNeuron(Neuron):
 
     def activate(self):
         try:
-            emit(self.input_signals.popleft())
+            input_signal = self.input_signals.popleft()
+            if input_signal > 0:
+                self.emit("UP ({0})".format(input_signal))
+            elif input_signal < 0:
+                self.emit("DOWN ({0})".format(input_signal))
+            else:
+                self.emit("UNCH ({0})".format(input_signal))
         except IndexError:
             print "No input signals to process"
 

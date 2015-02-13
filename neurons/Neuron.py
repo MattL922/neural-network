@@ -12,3 +12,6 @@ class Neuron(object):
 
     def receive(self, input):
         raise NotImplementedError("receive not implemented!")
+
+    def add_connection(self, neuron):
+        raise NotImplementedError("receive not implemented!")

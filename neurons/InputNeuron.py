@@ -1,3 +1,4 @@
+from neurons.Neuron import *
 from collections import deque
 
 class InputNeuron(Neuron):
@@ -23,3 +24,6 @@ class InputNeuron(Neuron):
 
     def receive(self, input_signal):
         self.input_signals.append(input_signal)
+
+    def add_connection(self, neuron):
+        self.neurons.append(neuron)
