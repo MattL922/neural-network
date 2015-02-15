@@ -1,8 +1,8 @@
-from network.Network import *
-from neurons.InputNeuron import *
-from neurons.HiddenNeuron import *
-from neurons.OutputNeuron import *
-from parsers.Parser import *
+from networks.network import *
+from neurons.input import *
+from neurons.hidden import *
+from neurons.output import *
+from parsers.parser import *
 
 network = Network()
 input_neuron = InputNeuron()
