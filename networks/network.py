@@ -1,7 +1,8 @@
 class Network(object):
     """Network"""
 
-    def __init__(self):
+    def __init__(self, parser=None):
+        self.parser = parser
         self.input_layer = []
         self.hidden_layer = []
         self.output_layer = []
@@ -15,18 +16,15 @@ class Network(object):
     def add_output_neuron(self, neuron):
         self.output_layer.append(neuron)
 
-    def _run(self):
-        for neuron in self.input_layer:
-            neuron.activate()
-        for neuron in self.hidden_layer:
-            neuron.activate()
-        for neuron in self.output_layer:
-            neuron.activate()
-
-    def receive(self, input_signal):
-        for neuron in self.input_layer:
-            neuron.receive(input_signal)
-            self._run()
+    def run(self):
+        for data in self.parser.parse():
+            for neuron in self.input_layer:
+                neuron.receive(data["return"])
+                neuron.activate()
+            for neuron in self.hidden_layer:
+                neuron.activate()
+            for neuron in self.output_layer:
+                neuron.activate()
 
     def connect(self):
         for hidden_neuron in self.hidden_layer:

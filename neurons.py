@@ -4,7 +4,7 @@ from random import gauss
 class Neuron(object):
     """Neuron class"""
 
-    def __init__(self, func):
+    def __init__(self, func=None):
         self.neurons = []
         self.input_signals = deque()
         self.value = 0.0
@@ -12,9 +12,9 @@ class Neuron(object):
         self.func = func
 
     def activate(self):
-        output = self.func(sum(self.input_signals)) * self.weight
+        self.value = self.func(sum(self.input_signals)) * self.weight
         self.input_signals.clear()
-        self.emit(output)
+        self.emit(self.value)
 
     def emit(self, output_signal):
         for neuron in self.neurons:
@@ -29,20 +29,20 @@ class Neuron(object):
 class InputNeuron(Neuron):
     """Input neuron"""
 
-    def __init__(self):
-        super(InputNeuron, self).__init__()
+    def __init__(self, func=None):
+        super(InputNeuron, self).__init__(func)
 
 class HiddenNeuron(Neuron):
     """Hidden neuron"""
 
-    def __init__(self):
-        super(HiddenNeuron, self).__init__()
+    def __init__(self, func=None):
+        super(HiddenNeuron, self).__init__(func)
 
 class OutputNeuron(Neuron):
     """Output neuron"""
 
-    def __init__(self):
-        super(OutputNeuron, self).__init__()
+    def __init__(self, func=None):
+        super(OutputNeuron, self).__init__(func)
 
     def emit(self, output_signal):
         print output_signal
@@ -50,10 +50,13 @@ class OutputNeuron(Neuron):
 class BiasNeuron(Neuron):
     """Bias neuron"""
 
-    def __init__(self, value=1.0, weight=1.0):
+    def __init__(self, value=1.0):
         super(BiasNeuron, self).__init__()
         self.value = value
-        self.weight = weight
+        self.weight = gauss(0, 1)
 
     def activate(self):
         self.emit(self.value * self.weight)
+
+    def receive(self, input_signal):
+        pass # bias neurons don't need input
