@@ -29,7 +29,7 @@ class Network(object):
     def connect(self):
         for hidden_neuron in self.hidden_layer:
             for output_neuron in self.output_layer:
-                hidden_neuron.add_connection(output_neuron)
+                hidden_neuron.add_forward_connection(output_neuron)
         for input_neuron in self.input_layer:
             for hidden_neuron in self.hidden_layer:
-                input_neuron.add_connection(hidden_neuron)
+                input_neuron.add_forward_connection(hidden_neuron)

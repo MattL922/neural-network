@@ -1,3 +1,4 @@
+from connections import *
 from collections import deque
 from random import gauss
 
@@ -5,26 +6,34 @@ class Neuron(object):
     """Neuron class"""
 
     def __init__(self, func=None):
-        self.neurons = []
+        self.forward_connections = []
         self.input_signals = deque()
         self.value = 0.0
-        self.weight = gauss(0, 1)
         self.func = func
+        self.delta = 0.0
 
     def activate(self):
-        self.value = self.func(sum(self.input_signals)) * self.weight
+        self.value = self.func(sum(self.input_signals))
         self.input_signals.clear()
-        self.emit(self.value)
+        self.emit()
 
-    def emit(self, output_signal):
-        for neuron in self.neurons:
-            neuron.receive(output_signal)
+    def emit(self):
+        for connection in self.forward_connections:
+            connection.emit(self.value)
 
     def receive(self, input_signal):
         self.input_signals.append(input_signal)
 
-    def add_connection(self, neuron):
-        self.neurons.append(neuron)
+    def add_forward_connection(self, neuron):
+        self.forward_connections.append(Connection(neuron))
+
+    def calculate_delta(self, target):
+        if(len(self.forward_connections) == 0):
+            self.delta = target - self.value
+        else:
+            self.delta = 0.0
+            for connection in self.forward_connections:
+                self.delta += (connection.neuron.delta * connection.weight)
 
 class InputNeuron(Neuron):
     """Input neuron"""
@@ -44,8 +53,8 @@ class OutputNeuron(Neuron):
     def __init__(self, func=None):
         super(OutputNeuron, self).__init__(func)
 
-    def emit(self, output_signal):
-        print output_signal
+    def emit(self):
+        print self.value
 
 class BiasNeuron(Neuron):
     """Bias neuron"""
@@ -53,10 +62,9 @@ class BiasNeuron(Neuron):
     def __init__(self, value=1.0):
         super(BiasNeuron, self).__init__()
         self.value = value
-        self.weight = gauss(0, 1)
 
     def activate(self):
-        self.emit(self.value * self.weight)
+        self.emit()
 
     def receive(self, input_signal):
         pass # bias neurons don't need input
