@@ -8,32 +8,36 @@ class Neuron(object):
     def __init__(self, func=None):
         self.forward_connections = []
         self.input_signals = deque()
-        self.value = 0.0
+        self.input_value = 0.0
+        self.output_value = 0.0
         self.func = func
         self.delta = 0.0
 
     def activate(self):
-        self.value = self.func(sum(self.input_signals))
+        self.input_value = sum(self.input_signals)
         self.input_signals.clear()
-        self.emit()
+        self.output_value = self.func.evaluate(self.input_value)
+        return self.emit()
 
     def emit(self):
         for connection in self.forward_connections:
-            connection.emit(self.value)
+            connection.emit(self.output_value)
 
     def receive(self, input_signal):
         self.input_signals.append(input_signal)
 
     def add_forward_connection(self, neuron):
-        self.forward_connections.append(Connection(neuron))
+        if type(neuron).__name__ != "BiasNeuron":
+            self.forward_connections.append(Connection(neuron))
 
-    def calculate_delta(self, target):
+    def calculate_delta(self, target=None):
         if(len(self.forward_connections) == 0):
-            self.delta = target - self.value
+            self.delta = (self.output_value - target) * self.func.derivative(self.input_value)
         else:
             self.delta = 0.0
             for connection in self.forward_connections:
                 self.delta += (connection.neuron.delta * connection.weight)
+            self.delta *= self.func.derivative(self.input_value)
 
 class InputNeuron(Neuron):
     """Input neuron"""
@@ -54,17 +58,20 @@ class OutputNeuron(Neuron):
         super(OutputNeuron, self).__init__(func)
 
     def emit(self):
-        print self.value
+        return self.output_value
 
 class BiasNeuron(Neuron):
     """Bias neuron"""
 
-    def __init__(self, value=1.0):
+    def __init__(self, output_value=1.0):
         super(BiasNeuron, self).__init__()
-        self.value = value
+        self.output_value = output_value
 
     def activate(self):
         self.emit()
 
     def receive(self, input_signal):
         pass # bias neurons don't need input
+
+    def calculate_delta(self, target=None):
+        pass
